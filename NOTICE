@@ -7,3 +7,17 @@ https://github.com/S-M-Dev/Poly4J
 This product includes software developed by:
 S-M-Dev (https://github.com/S-M-Dev)
 Daniil (razorprogrammer@gmail.com)
+
+=========================================================================
+Third-party dependencies:
+=========================================================================
+
+Jackson JSON processor
+Copyright (c) 2007- Tatu Saloranta, tatu.saloranta@iki.fi
+Licensed under the Apache License, Version 2.0
+https://github.com/FasterXML/jackson
+
+Jackson databind module
+Copyright (c) 2008- FasterXML. All rights reserved.
+Licensed under the Apache License, Version 2.0
+https://github.com/FasterXML/jackson-databind
