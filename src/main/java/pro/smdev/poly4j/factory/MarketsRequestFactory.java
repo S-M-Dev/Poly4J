@@ -31,7 +31,7 @@ public class MarketsRequestFactory {
      * Create request for market data loading by market slug
      * <br>
      * API:
-     * <a href="https://docs.polymarket.com/api-reference/markets/get-market-by-slug">https://gamma-api.polymarket.com/markets/slug/{slug}</a>}
+     * <a href="https://docs.polymarket.com/api-reference/markets/get-market-by-slug">https://gamma-api.polymarket.com/markets/slug/{slug}</a>
      * @param slug market slug
      * @return Configured {@link RequestBuilder}
      *
