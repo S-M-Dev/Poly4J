@@ -21,3 +21,13 @@ Jackson databind module
 Copyright (c) 2008- FasterXML. All rights reserved.
 Licensed under the Apache License, Version 2.0
 https://github.com/FasterXML/jackson-databind
+
+Bouncy Castle (bcpkix-jdk18on)
+Copyright (c) 2000-2025 The Legion of the Bouncy Castle Inc.
+Licensed under the MIT License
+https://github.com/bcgit/bc-java
+
+web3j crypto
+Copyright (c) 2016-2025 Web3 Labs Ltd.
+Licensed under the Apache License, Version 2.0
+https://github.com/web3j/web3j

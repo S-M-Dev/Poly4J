@@ -24,11 +24,15 @@ import pro.smdev.poly4j.model.RequestBuilder;
  * @see RequestBuilder
  * @see ProfileRequestFactory
  * @see MarketsRequestFactory
+ * @see AuthenticationRequestFactory
+ * @see OrdersRequestFactory
  */
 public class RequestFactoryHolder {
 
     private final ProfileRequestFactory profileRequestFactory = new ProfileRequestFactory();
     private final MarketsRequestFactory marketsRequestFactory = new MarketsRequestFactory();
+    private final AuthenticationRequestFactory authenticationRequestFactory = new AuthenticationRequestFactory();
+    private final OrdersRequestFactory ordersRequestFactory = new OrdersRequestFactory();
 
     public ProfileRequestFactory profile() {
         return profileRequestFactory;
@@ -36,6 +40,14 @@ public class RequestFactoryHolder {
 
     public MarketsRequestFactory markets() {
         return marketsRequestFactory;
+    }
+
+    public AuthenticationRequestFactory authentication() {
+        return authenticationRequestFactory;
+    }
+
+    public OrdersRequestFactory orders() {
+        return ordersRequestFactory;
     }
 
 }

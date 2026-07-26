@@ -31,7 +31,7 @@ public class ProfileRequestFactory {
      * Create request for profile data loading by walletId
      * <br>
      * API:
-     * <a href="https://docs.polymarket.com/api-reference/profiles/get-public-profile-by-wallet-address">https://gamma-api.polymarket.com/public-profile</a>}
+     * <a href="https://docs.polymarket.com/api-reference/profiles/get-public-profile-by-wallet-address">https://gamma-api.polymarket.com/public-profile</a>
      * @param walletId profile walletId
      * @return Configured {@link RequestBuilder}
      *

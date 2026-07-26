@@ -7,10 +7,11 @@ Poly4J is a lightweight Java library that provides a clean, builder-style interf
 ## Features
 
 - Fluent, builder-style request configuration via `RequestBuilder`
-- Ready-made request factories for common Polymarket endpoints (markets, profiles)
+- Ready-made request factories for common Polymarket endpoints (markets, profiles, authentication, orders)
+- Wallet-based L1/L2 authentication (API key creation/derivation and request signing) via `AuthenticationUtils`
 - Asynchronous requests backed by Java's `HttpClient`, returning `CompletableFuture`
 - Pluggable response mapping — map responses to `String`, `JsonNode`, or any custom type via `ResponseMapper`
-- Built on Java 21, with minimal dependencies (Jackson for JSON handling)
+- Built on Java 21, using Jackson for JSON handling and web3j/Bouncy Castle for wallet signing
 
 ## Installation
 
