@@ -18,7 +18,6 @@ package pro.smdev.poly4j.factory;
 
 import org.web3j.crypto.Keys;
 import pro.smdev.poly4j.model.Authentication;
-import pro.smdev.poly4j.model.PolymarketAuthentication;
 import pro.smdev.poly4j.model.RequestBuilder;
 import pro.smdev.poly4j.utils.AuthenticationUtils;
 
@@ -39,7 +38,7 @@ public class OrdersRequestFactory {
      * <br>
      * API:
      * <a href="https://docs.polymarket.com/api-reference/trade/get-user-orders">https://clob.polymarket.com/data/orders</a>
-     * @param authentication {@link PolymarketAuthentication} object
+     * @param authentication {@link Authentication} object
      * @return Configured {@link RequestBuilder}
      *
      */
