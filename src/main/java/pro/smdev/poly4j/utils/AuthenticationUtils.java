@@ -23,9 +23,7 @@ import org.web3j.crypto.Sign;
 import org.web3j.crypto.StructuredDataEncoder;
 import org.web3j.utils.Numeric;
 import pro.smdev.poly4j.model.Authentication;
-import pro.smdev.poly4j.model.PolymarketAuthentication;
 import pro.smdev.poly4j.model.Secrets;
-import pro.smdev.poly4j.model.Wallet;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -110,7 +108,7 @@ public class AuthenticationUtils {
 
     /**
      * Create signature for L2 authentication header
-     * @param secret {@link PolymarketAuthentication#secret()} associated with account api key
+     * @param secret associated with account api key
      * @param timestamp Current UNIX timestamp in seconds
      * @param method {@link pro.smdev.poly4j.model.RequestMethod}
      * @param path Request path
@@ -139,21 +137,6 @@ public class AuthenticationUtils {
         } catch (Exception e) {
             throw new RuntimeException("Failed to calculate Polymarket HMAC signature", e);
         }
-    }
-
-    /**
-     * Create authentication object after L1 authentication
-     * @param wallet Wallet associated with account
-     * @param authNode Response node from L1 authentication
-     * @return Authentication object which contains all information for L2 requests
-     */
-    public static PolymarketAuthentication buildAuthentication(Wallet wallet, JsonNode authNode) {
-        return new PolymarketAuthentication(
-                wallet,
-                authNode.at("/apiKey").asText(),
-                authNode.at("/secret").asText(),
-                authNode.at("/passphrase").asText()
-        );
     }
 
     public static Secrets buildClobSecrets(JsonNode authNode) {
