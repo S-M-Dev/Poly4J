@@ -38,6 +38,7 @@ public class RequestBuilder {
     private static final String POLYMARKET_GAMMA_API = "gamma-api.polymarket.com";
     private static final String POLYMARKET_DATA_API = "data-api.polymarket.com";
     private static final String POLYMARKET_CLOB_API = "clob.polymarket.com";
+    private static final String POLYMARKET_REPLAYER_API = "relayer-v2.polymarket.com";
 
     private final Map<String, String> params = new HashMap<>();
     private final Map<String, String> headers = new HashMap<>();
@@ -111,6 +112,10 @@ public class RequestBuilder {
 
     public static  RequestBuilder clobApi() {
         return new RequestBuilder(POLYMARKET_CLOB_API);
+    }
+
+    public static RequestBuilder relayerApi() {
+        return new RequestBuilder(POLYMARKET_REPLAYER_API);
     }
 
 }

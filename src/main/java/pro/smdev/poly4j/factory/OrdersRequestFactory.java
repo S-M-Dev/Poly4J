@@ -17,6 +17,7 @@ package pro.smdev.poly4j.factory;
  */
 
 import org.web3j.crypto.Keys;
+import pro.smdev.poly4j.model.Authentication;
 import pro.smdev.poly4j.model.PolymarketAuthentication;
 import pro.smdev.poly4j.model.RequestBuilder;
 import pro.smdev.poly4j.utils.AuthenticationUtils;
@@ -42,15 +43,16 @@ public class OrdersRequestFactory {
      * @return Configured {@link RequestBuilder}
      *
      */
-    public RequestBuilder getOpenOrders(PolymarketAuthentication authentication) throws IOException {
+    public RequestBuilder getOpenOrders(Authentication authentication) throws IOException {
         String timestamp = String.valueOf(Instant.now().getEpochSecond());
         return RequestBuilder.clobApi()
                 .get()
                 .url("/data/orders")
-                .addHeader("POLY_API_KEY", authentication.apiKey())
-                .addHeader("POLY_ADDRESS", Keys.toChecksumAddress(authentication.wallet().address()))
-                .addHeader("POLY_SIGNATURE", AuthenticationUtils.encodeL2Signature(authentication.secret(), timestamp, "GET", "/data/orders", ""))
-                .addHeader("POLY_PASSPHRASE", authentication.passphrase())
+                .addHeader("POLY_API_KEY", authentication.getClobSecrets().key())
+                .addHeader("POLY_ADDRESS", Keys.toChecksumAddress(authentication.getSignerAddress()))
+                .addHeader("POLY_SIGNATURE", AuthenticationUtils.encodeL2Signature(authentication.getClobSecrets().secret(),
+                        timestamp, "GET", "/data/orders", ""))
+                .addHeader("POLY_PASSPHRASE", authentication.getClobSecrets().passphrase())
                 .addHeader("POLY_TIMESTAMP", timestamp);
     }
 

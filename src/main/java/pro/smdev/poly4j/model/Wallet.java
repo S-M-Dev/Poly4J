@@ -19,11 +19,9 @@ package pro.smdev.poly4j.model;
 /**
  * Contains information about wallet which is associated with polymarket account
  * @param address wallet address
- * @param privateKeyHex wallet private key
- *
  * @author ALazyGuy
  * @since 1.0.0
  */
-public record Wallet(String address, String privateKeyHex) {
+public record Wallet(String address) {
 
 }
