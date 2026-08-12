@@ -17,6 +17,7 @@ package pro.smdev.poly4j.factory;
  */
 
 import org.web3j.crypto.Keys;
+import pro.smdev.poly4j.model.Authentication;
 import pro.smdev.poly4j.model.RequestBuilder;
 import pro.smdev.poly4j.model.Wallet;
 import pro.smdev.poly4j.utils.AuthenticationUtils;
@@ -38,18 +39,18 @@ public class AuthenticationRequestFactory {
      * <br>
      * API:
      * <a href="https://docs.polymarket.com/getting-started/api#authentication">https://clob.polymarket.com/auth/api-key</a>
-     * @param wallet {@link Wallet} object
+     * @param authentication {@link Authentication} object
      * @param nonce Nonce for newly created api key
      * @return Configured {@link RequestBuilder}
      *
      */
-    public RequestBuilder createApiKey(Wallet wallet, String nonce) throws IOException {
+    public RequestBuilder createApiKey(Authentication authentication, String nonce) throws IOException {
         String timestamp = String.valueOf(Instant.now().getEpochSecond());
         return RequestBuilder.clobApi()
                 .post(null)
                 .url("/auth/api-key")
-                .addHeader("POLY_ADDRESS", Keys.toChecksumAddress(wallet.address()))
-                .addHeader("POLY_SIGNATURE", AuthenticationUtils.encodeL1Signature(wallet, timestamp, nonce))
+                .addHeader("POLY_ADDRESS", Keys.toChecksumAddress(authentication.getSignerAddress()))
+                .addHeader("POLY_SIGNATURE", AuthenticationUtils.encodeL1Signature(authentication, timestamp, nonce))
                 .addHeader("POLY_TIMESTAMP", timestamp)
                 .addHeader("POLY_NONCE", nonce);
     }
@@ -64,13 +65,13 @@ public class AuthenticationRequestFactory {
      * @return Configured {@link RequestBuilder}
      *
      */
-    public RequestBuilder deriveApiKey(Wallet wallet, String nonce) throws IOException {
+    public RequestBuilder deriveApiKey(Authentication authentication, String nonce) throws IOException {
         String timestamp = String.valueOf(Instant.now().getEpochSecond());
         return RequestBuilder.clobApi()
                 .get()
                 .url("/auth/derive-api-key")
-                .addHeader("POLY_ADDRESS", Keys.toChecksumAddress(wallet.address()))
-                .addHeader("POLY_SIGNATURE", AuthenticationUtils.encodeL1Signature(wallet, timestamp, nonce))
+                .addHeader("POLY_ADDRESS", Keys.toChecksumAddress(authentication.getSignerAddress()))
+                .addHeader("POLY_SIGNATURE", AuthenticationUtils.encodeL1Signature(authentication, timestamp, nonce))
                 .addHeader("POLY_TIMESTAMP", timestamp)
                 .addHeader("POLY_NONCE", nonce);
     }

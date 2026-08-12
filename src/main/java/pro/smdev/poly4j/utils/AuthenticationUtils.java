@@ -22,7 +22,9 @@ import org.web3j.crypto.Keys;
 import org.web3j.crypto.Sign;
 import org.web3j.crypto.StructuredDataEncoder;
 import org.web3j.utils.Numeric;
+import pro.smdev.poly4j.model.Authentication;
 import pro.smdev.poly4j.model.PolymarketAuthentication;
+import pro.smdev.poly4j.model.Secrets;
 import pro.smdev.poly4j.model.Wallet;
 
 import javax.crypto.Mac;
@@ -47,7 +49,7 @@ public class AuthenticationUtils {
             + "    {\"name\": \"address\", \"type\": \"address\"},"
             + "    {\"name\": \"timestamp\", \"type\": \"string\"},"
             + "    {\"name\": \"nonce\", \"type\": \"uint256\"},"
-            + "    {\"name\": \"message\", \"type\": \"string\""
+            + "    {\"name\": \"message\", \"type\": \"string\"}"
             + "  ]"
             + "},"
             + "\"primaryType\": \"ClobAuth\","
@@ -66,15 +68,15 @@ public class AuthenticationUtils {
 
     /**
      * Create signature for L1 authentication header
-     * @param wallet {@link Wallet} object associated with account
+     * @param authentication {@link Authentication} object associated with account
      * @param timestamp Current UNIX timestamp in seconds
      * @param nonce Request nonce
      * @return Encoded signature for L1 authentication
      */
-    public static String encodeL1Signature(Wallet wallet, String timestamp, String nonce) throws IOException {
+    public static String encodeL1Signature(Authentication authentication, String timestamp, String nonce) throws IOException {
         try {
-            String cleanedPrivateKey = wallet.privateKeyHex().replace("0x", "").trim();
-            String checksummedWallet = Keys.toChecksumAddress(wallet.address().trim());
+            String cleanedPrivateKey = authentication.getSignerPrivateKey().replace("0x", "").trim();
+            String checksummedWallet = Keys.toChecksumAddress(authentication.getSignerAddress().trim());
             ECKeyPair keyPair = ECKeyPair.create(Numeric.hexStringToByteArray(cleanedPrivateKey));
             String derivedAddress = Keys.getAddress(keyPair);
             String checksummedDerived = Keys.toChecksumAddress("0x" + derivedAddress);
@@ -148,6 +150,14 @@ public class AuthenticationUtils {
     public static PolymarketAuthentication buildAuthentication(Wallet wallet, JsonNode authNode) {
         return new PolymarketAuthentication(
                 wallet,
+                authNode.at("/apiKey").asText(),
+                authNode.at("/secret").asText(),
+                authNode.at("/passphrase").asText()
+        );
+    }
+
+    public static Secrets buildClobSecrets(JsonNode authNode) {
+        return new Secrets(
                 authNode.at("/apiKey").asText(),
                 authNode.at("/secret").asText(),
                 authNode.at("/passphrase").asText()
