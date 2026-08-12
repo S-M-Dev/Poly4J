@@ -35,7 +35,7 @@ import static org.web3j.crypto.Keys.toChecksumAddress;
  * {@code 0x94Bf330955A0B957662FEaF878DE77bF25f76CD9}.
  *
  * @author ALazyGuy
- * @since 1.0.0
+ * @since 2.0.0
  */
 public class DepositWalletUtils {
 
