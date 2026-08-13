@@ -18,11 +18,13 @@ package pro.smdev.poly4j.core;
 
 import pro.smdev.poly4j.factory.RequestFactoryHolder;
 import pro.smdev.poly4j.mapper.ResponseMapper;
+import pro.smdev.poly4j.model.Authentication;
 import pro.smdev.poly4j.model.RequestBuilder;
 
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * The main client for performing polymarket requests.
@@ -37,7 +39,8 @@ import java.util.concurrent.CompletableFuture;
  */
 public class PolyClient {
 
-    private final RequestFactoryHolder requestFactoryHolder = new RequestFactoryHolder();
+    private final AtomicReference<Authentication> authentication = new AtomicReference<>();
+    private final RequestFactoryHolder requestFactoryHolder = new RequestFactoryHolder(authentication);
     private final HttpClient client;
 
     public PolyClient() {
@@ -70,6 +73,11 @@ public class PolyClient {
     public <T> CompletableFuture<T> perform(RequestBuilder requestBuilder, ResponseMapper<T> responseMapper) {
         return client.sendAsync(requestBuilder.toHttpRequest(), HttpResponse.BodyHandlers.ofString())
                 .thenApply(responseMapper::map);
+    }
+
+    public PolyClient authenticated(Authentication authentication) {
+        this.authentication.set(authentication);
+        return this;
     }
 
 }

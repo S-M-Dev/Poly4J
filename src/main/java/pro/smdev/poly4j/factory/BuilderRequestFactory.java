@@ -22,15 +22,20 @@ import pro.smdev.poly4j.utils.AuthenticationUtils;
 import pro.smdev.poly4j.utils.BuilderApiUtils;
 
 import java.time.Instant;
+import java.util.concurrent.atomic.AtomicReference;
 
-public class BuilderRequestFactory {
+public class BuilderRequestFactory extends AuthenticatedGuard {
+
+    public BuilderRequestFactory(AtomicReference<Authentication> authentication) {
+        super(authentication);
+    }
 
     /**
      * Create new deposit wallet for signer
-     * @param authentication authentication object with configured {@link pro.smdev.poly4j.model.Secrets}
      * @return configured request
      */
-    public RequestBuilder createWallet(Authentication authentication) {
+    public RequestBuilder createWallet() {
+        Authentication authentication = validateBuilder();
         String timestamp = String.valueOf(Instant.now().getEpochSecond());
         String body = BuilderApiUtils.walletCreate(authentication.getSignerAddress());
         return RequestBuilder.relayerApi()

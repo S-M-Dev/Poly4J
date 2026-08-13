@@ -28,6 +28,11 @@ public class Authentication {
     private Secrets builderSecrets = null;
     private Secrets clobSecrets = null;
 
+    public Authentication(String signerPrivateKey, String builderApiKey, String builderSecret, String builderPassphrase) {
+        this(signerPrivateKey);
+        setBuilderSecrets(new Secrets(builderApiKey, builderSecret, builderPassphrase));
+    }
+
     public Authentication(String signerPrivateKey) {
         ECKeyPair keyPair = ECKeyPair.create(Numeric.hexStringToByteArray(signerPrivateKey));
         this.signerAddress = Keys.toChecksumAddress(Keys.getAddress(keyPair));
