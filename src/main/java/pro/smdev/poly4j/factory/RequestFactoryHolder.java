@@ -35,6 +35,7 @@ public class RequestFactoryHolder {
     private final OrdersRequestFactory ordersRequestFactory = new OrdersRequestFactory();
     private final BuilderRequestFactory builderRequestFactory = new BuilderRequestFactory();
     private final OrderbookRequestFactory orderbookRequestFactory = new OrderbookRequestFactory();
+    private final PositionsRequestFactory positionsRequestFactory = new PositionsRequestFactory();
 
     public ProfileRequestFactory profile() {
         return profileRequestFactory;
@@ -58,6 +59,10 @@ public class RequestFactoryHolder {
 
     public OrderbookRequestFactory orderbook() {
         return orderbookRequestFactory;
+    }
+
+    public PositionsRequestFactory positions() {
+        return positionsRequestFactory;
     }
 
 }

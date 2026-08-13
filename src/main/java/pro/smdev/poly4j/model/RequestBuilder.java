@@ -67,6 +67,12 @@ public class RequestBuilder {
         return this;
     }
 
+    public RequestBuilder delete(String data) {
+        requestMethod = RequestMethod.DELETE;
+        postData = data;
+        return this;
+    }
+
     public RequestBuilder addParam(String key, String value) {
         params.put(key, value);
         return this;
@@ -93,6 +99,8 @@ public class RequestBuilder {
 
         if (requestMethod == RequestMethod.POST) {
             builder = builder.POST(postData == null ? HttpRequest.BodyPublishers.noBody() : HttpRequest.BodyPublishers.ofString(postData));
+        } else if (requestMethod == RequestMethod.DELETE) {
+            builder = builder.method("DELETE", postData == null ? HttpRequest.BodyPublishers.noBody() : HttpRequest.BodyPublishers.ofString(postData));
         }
 
         for (Map.Entry<String, String> entry : headers.entrySet()) {

@@ -17,13 +17,14 @@ package pro.smdev.poly4j.model;
  */
 
 /**
- * Http Method for {@link RequestBuilder} configuration
+ * Time in force for a {@code POST /order} request.
  *
  * @author ALazyGuy
- * @since 1.0.0
+ * @since 2.0.0
  */
-public enum RequestMethod {
-    GET,
-    POST,
-    DELETE
+public enum OrderType {
+    GTC,
+    FOK,
+    GTD,
+    FAK
 }
