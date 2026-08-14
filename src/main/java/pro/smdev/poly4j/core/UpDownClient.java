@@ -142,8 +142,6 @@ public class UpDownClient extends AuthenticatedGuard {
                     return client.perform(client.request().orders().postOrder(order, OrderType.FOK, false, false),
                                     ResponseMapper.jsonMapper())
                             .thenCompose(postOrderNode -> {
-                                System.out.print(side + " -> ");
-                                System.out.println(postOrderNode);
                                 if (postOrderNode.has("takingAmount") && !postOrderNode.at("/takingAmount").isMissingNode()) {
                                     return CompletableFuture.completedFuture(
                                             Double.parseDouble(postOrderNode.at("/takingAmount").asText()));

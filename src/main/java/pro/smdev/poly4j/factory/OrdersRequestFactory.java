@@ -22,7 +22,6 @@ import pro.smdev.poly4j.model.OrderType;
 import pro.smdev.poly4j.model.RequestBuilder;
 import pro.smdev.poly4j.utils.OrderJsonUtils;
 
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -86,7 +85,7 @@ public class OrdersRequestFactory extends AuthenticatedGuard {
      * @return Configured {@link RequestBuilder}
      *
      */
-    public RequestBuilder cancelOrder(String orderId) throws IOException {
+    public RequestBuilder cancelOrder(String orderId) {
         String body = OrderJsonUtils.toCancelOrderBody(orderId);
         return RequestBuilder.clobApi()
                 .delete(body)
