@@ -44,6 +44,7 @@ public class PolyClient {
 
     private final AtomicReference<Authentication> authentication = new AtomicReference<>();
     private final RequestFactoryHolder requestFactoryHolder = new RequestFactoryHolder(authentication);
+    private final AtomicReference<UpDownClient> upDownClient = new AtomicReference<>();
     private final HttpClient client;
 
     public PolyClient() {
@@ -94,6 +95,10 @@ public class PolyClient {
         return authentication.get();
     }
 
+    public AtomicReference<Authentication> getAuthenticationAtomic() {
+        return authentication;
+    }
+
     /**
      * Derives and stores L2 (CLOB API key) credentials for the current {@link #authenticated authentication},
      * creating a new API key if one does not already exist for {@code nonce}.
@@ -111,6 +116,16 @@ public class PolyClient {
                         return saveClobCredentials(node);
                     }
                 });
+    }
+
+    public synchronized CompletableFuture<UpDownClient> getUpDownClient(String nonce) {
+        if (upDownClient.get() == null) {
+            UpDownClient cl = new UpDownClient(this);
+            upDownClient.set(cl);
+            return cl.initialize(nonce);
+        }
+
+        return CompletableFuture.completedFuture(upDownClient.get());
     }
 
     private CompletableFuture<Void> saveClobCredentials(JsonNode node) {

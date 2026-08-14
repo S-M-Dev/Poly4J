@@ -16,6 +16,7 @@ package pro.smdev.poly4j.utils;
  * limitations under the License.
  */
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import pro.smdev.poly4j.model.Order;
@@ -42,10 +43,9 @@ public class OrderJsonUtils {
      * @param deferExec whether to defer execution
      * @param postOnly whether the order must rest on the book and not match immediately (GTC/GTD only)
      * @return the {@code SendOrder} request body
-     * @throws IOException if serialization fails
      */
     public static String toSendOrderBody(Order order, String owner, OrderType orderType, boolean deferExec,
-            boolean postOnly) throws IOException {
+            boolean postOnly) {
         ObjectNode orderNode = MAPPER.createObjectNode();
         orderNode.put("maker", order.maker());
         orderNode.put("signer", order.signer());
@@ -68,14 +68,22 @@ public class OrderJsonUtils {
         root.put("deferExec", deferExec);
         root.put("postOnly", postOnly);
 
-        return MAPPER.writeValueAsString(root);
+        try {
+            return MAPPER.writeValueAsString(root);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /** Serializes the {@code CancelOrder} JSON body expected by {@code DELETE /order}. */
-    public static String toCancelOrderBody(String orderId) throws IOException {
+    public static String toCancelOrderBody(String orderId) {
         ObjectNode root = MAPPER.createObjectNode();
         root.put("orderID", orderId);
-        return MAPPER.writeValueAsString(root);
+        try {
+            return MAPPER.writeValueAsString(root);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
