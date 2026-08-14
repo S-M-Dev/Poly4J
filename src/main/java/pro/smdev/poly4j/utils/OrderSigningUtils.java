@@ -184,8 +184,6 @@ public class OrderSigningUtils {
      * {@code timestamp}, then EIP-712 signs the order struct with {@code authentication}'s signer key.
      *
      * @param authentication {@link Authentication} object holding the signer's private key
-     * @param maker Ethereum address providing the funds for the order (proxy address by default). For
-     *              {@link SignatureType#DEPOSIT_WALLET} this must be {@link Authentication#getFundAddress()}
      * @param tokenId CLOB token id (asset id) being traded
      * @param makerAmount amount the maker provides, fixed-point with 6 decimals
      * @param takerAmount amount the taker provides, fixed-point with 6 decimals
@@ -194,11 +192,10 @@ public class OrderSigningUtils {
      * @param signatureType {@link SignatureType} identifying the signing wallet
      * @param negRisk whether the market is a negative-risk market, selecting the verifying exchange contract
      * @return the fully signed {@link Order}
-     * @throws IOException if signing fails
      */
     public static Order createAndSignOrder(Authentication authentication, String tokenId,
             String makerAmount, String takerAmount, Side side, long expiration, SignatureType signatureType,
-            boolean negRisk) throws IOException {
+            boolean negRisk) {
         String maker = authentication.getFundAddress();
         long salt = ThreadLocalRandom.current().nextLong(1, MAX_SAFE_INTEGER);
         long timestamp = Instant.now().toEpochMilli();
@@ -222,7 +219,7 @@ public class OrderSigningUtils {
 
     private static String signDirectOrder(Authentication authentication, String verifyingContract, long salt,
             String maker, String signer, String tokenId, String makerAmount, String takerAmount, Side side,
-            long timestamp, SignatureType signatureType) throws IOException {
+            long timestamp, SignatureType signatureType) {
         try {
             ECKeyPair keyPair = signerKeyPair(authentication);
 
@@ -233,7 +230,7 @@ public class OrderSigningUtils {
             byte[] messageHash = encoder.hashStructuredData();
             return Numeric.toHexString(ecdsaSign(keyPair, messageHash));
         } catch (Exception e) {
-            throw new IOException("Failed to generate order signature: " + e.getMessage(), e);
+            throw new IllegalArgumentException("Failed to generate order signature: " + e.getMessage(), e);
         }
     }
 
@@ -246,8 +243,7 @@ public class OrderSigningUtils {
      * (<a href="https://github.com/Polymarket/clob-client-v2/blob/main/src/order-utils/exchangeOrderBuilderV2.ts">source</a>).
      */
     private static String signDepositWalletOrder(Authentication authentication, String verifyingContract, long salt,
-            String wallet, String tokenId, String makerAmount, String takerAmount, Side side, long timestamp)
-            throws IOException {
+            String wallet, String tokenId, String makerAmount, String takerAmount, Side side, long timestamp) {
         try {
             byte[] appDomainSep = domainSeparator(CTF_EXCHANGE_DOMAIN_NAME, CTF_EXCHANGE_DOMAIN_VERSION, verifyingContract);
             byte[] contentsHash = orderStructHash(salt, wallet, wallet, tokenId, makerAmount, takerAmount, side,
@@ -268,7 +264,7 @@ public class OrderSigningUtils {
             return Numeric.toHexString(DepositWalletUtils.concat(innerSignature, appDomainSep, contentsHash,
                     contentsType, contentsTypeLength));
         } catch (Exception e) {
-            throw new IOException("Failed to generate deposit wallet order signature: " + e.getMessage(), e);
+            throw new IllegalArgumentException("Failed to generate deposit wallet order signature: " + e.getMessage(), e);
         }
     }
 

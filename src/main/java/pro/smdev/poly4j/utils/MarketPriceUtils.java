@@ -72,12 +72,24 @@ public class MarketPriceUtils {
             double size = level[1];
             cumulative += side == Side.BUY ? price * size : size;
             if (cumulative >= amountToMatch) {
-                return price;
+                return withSlippageCushion(price, side, book.get("tick_size").asText());
             }
         }
 
         throw new IllegalStateException("Order book does not have enough depth to fill a market order of size "
                 + amountToMatch);
+    }
+
+    /**
+     * Nudges {@code price} one tick in the direction that favors matching (higher for a BUY, lower for a SELL).
+     * A FOK order signed at the exact "just enough" price computed from a book snapshot gets killed by any
+     * unfavorable book movement between that snapshot and the order actually reaching the matching engine;
+     * one tick of cushion absorbs small movements at the cost of a marginally worse fill price.
+     */
+    private static double withSlippageCushion(double price, Side side, String tickSize) {
+        double tick = Double.parseDouble(tickSize);
+        double cushioned = side == Side.BUY ? price + tick : price - tick;
+        return Math.min(1 - tick, Math.max(tick, cushioned));
     }
 
     /**

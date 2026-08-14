@@ -66,7 +66,7 @@ public class OrdersRequestFactory extends AuthenticatedGuard {
      *
      */
     public RequestBuilder postOrder(Order order, OrderType orderType,
-            boolean deferExec, boolean postOnly) throws IOException {
+            boolean deferExec, boolean postOnly) {
         Authentication authentication = validateL2();
         String body = OrderJsonUtils.toSendOrderBody(order, authentication.getClobSecrets().key(), orderType,
                 deferExec, postOnly);
