@@ -17,13 +17,24 @@ package pro.smdev.poly4j.model;
  */
 
 /**
- * Http Method for {@link RequestBuilder} configuration
+ * Side of an {@link Order}. The name of each constant is also the JSON wire value
+ * expected by the CLOB API, while {@link #getValue()} is the {@code uint8} encoding
+ * signed as part of the EIP-712 order struct (0 for BUY, 1 for SELL).
  *
  * @author ALazyGuy
- * @since 1.0.0
+ * @since 2.0.0
  */
-public enum RequestMethod {
-    GET,
-    POST,
-    DELETE
+public enum Side {
+    BUY(0),
+    SELL(1);
+
+    private final int value;
+
+    Side(int value) {
+        this.value = value;
+    }
+
+    public int getValue() {
+        return value;
+    }
 }

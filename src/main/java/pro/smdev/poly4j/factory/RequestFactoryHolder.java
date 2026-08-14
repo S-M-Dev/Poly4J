@@ -16,7 +16,10 @@ package pro.smdev.poly4j.factory;
  * limitations under the License.
  */
 
+import pro.smdev.poly4j.model.Authentication;
 import pro.smdev.poly4j.model.RequestBuilder;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author ALazyGuy
@@ -31,10 +34,17 @@ public class RequestFactoryHolder {
 
     private final ProfileRequestFactory profileRequestFactory = new ProfileRequestFactory();
     private final MarketsRequestFactory marketsRequestFactory = new MarketsRequestFactory();
-    private final AuthenticationRequestFactory authenticationRequestFactory = new AuthenticationRequestFactory();
-    private final OrdersRequestFactory ordersRequestFactory = new OrdersRequestFactory();
-    private final BuilderRequestFactory builderRequestFactory = new BuilderRequestFactory();
     private final OrderbookRequestFactory orderbookRequestFactory = new OrderbookRequestFactory();
+    private final PositionsRequestFactory positionsRequestFactory = new PositionsRequestFactory();
+    private final AuthenticationRequestFactory authenticationRequestFactory;
+    private final BuilderRequestFactory builderRequestFactory;
+    private final OrdersRequestFactory ordersRequestFactory;
+
+    public RequestFactoryHolder(AtomicReference<Authentication> authentication) {
+        authenticationRequestFactory = new AuthenticationRequestFactory(authentication);
+        builderRequestFactory = new BuilderRequestFactory(authentication);
+        ordersRequestFactory = new OrdersRequestFactory(authentication);
+    }
 
     public ProfileRequestFactory profile() {
         return profileRequestFactory;
@@ -58,6 +68,10 @@ public class RequestFactoryHolder {
 
     public OrderbookRequestFactory orderbook() {
         return orderbookRequestFactory;
+    }
+
+    public PositionsRequestFactory positions() {
+        return positionsRequestFactory;
     }
 
 }

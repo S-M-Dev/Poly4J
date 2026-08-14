@@ -16,13 +16,18 @@ package pro.smdev.poly4j.core;
  * limitations under the License.
  */
 
+import com.fasterxml.jackson.databind.JsonNode;
 import pro.smdev.poly4j.factory.RequestFactoryHolder;
 import pro.smdev.poly4j.mapper.ResponseMapper;
+import pro.smdev.poly4j.model.Authentication;
 import pro.smdev.poly4j.model.RequestBuilder;
+import pro.smdev.poly4j.model.Secrets;
+import pro.smdev.poly4j.utils.AuthenticationUtils;
 
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * The main client for performing polymarket requests.
@@ -31,21 +36,27 @@ import java.util.concurrent.CompletableFuture;
  * Each performed request may be mapped by custom {@link ResponseMapper} or existing ones.</p>
  *
  * @author ALazyGuy
- * @since 1.0.0
  * @see RequestFactoryHolder
  * @see RequestBuilder
+ * @since 1.0.0
  */
 public class PolyClient {
 
-    private final RequestFactoryHolder requestFactoryHolder = new RequestFactoryHolder();
+    private final AtomicReference<Authentication> authentication = new AtomicReference<>();
+    private final RequestFactoryHolder requestFactoryHolder = new RequestFactoryHolder(authentication);
     private final HttpClient client;
 
     public PolyClient() {
-        client = HttpClient.newHttpClient();
+        this(HttpClient.newHttpClient());
+    }
+
+    public PolyClient(HttpClient client) {
+        this.client = client;
     }
 
     /**
      * Returns {@link RequestFactoryHolder} object to use builder-like semantic for requests.
+     *
      * @return {@link RequestFactoryHolder}
      */
     public RequestFactoryHolder request() {
@@ -54,6 +65,7 @@ public class PolyClient {
 
     /**
      * Perform request and map response body to string.
+     *
      * @param requestBuilder configured request builder
      * @return {@link CompletableFuture} with response body as string
      */
@@ -63,13 +75,42 @@ public class PolyClient {
 
     /**
      * Perform request and map response body to type defined by generic {@link ResponseMapper mapper}.
+     *
      * @param requestBuilder configured request builder
-     * @param <T> Type to which body will be cast.
+     * @param <T>            Type to which body will be cast.
      * @return {@link CompletableFuture} with response body.
      */
     public <T> CompletableFuture<T> perform(RequestBuilder requestBuilder, ResponseMapper<T> responseMapper) {
         return client.sendAsync(requestBuilder.toHttpRequest(), HttpResponse.BodyHandlers.ofString())
                 .thenApply(responseMapper::map);
+    }
+
+    public PolyClient authenticated(Authentication authentication) {
+        this.authentication.set(authentication);
+        return this;
+    }
+
+    public Authentication getAuthentication() {
+        return authentication.get();
+    }
+
+    public CompletableFuture<Void> deriveL2Credentials(String nonce) {
+        return perform(request().authentication().deriveApiKey(nonce), ResponseMapper.jsonMapper())
+                .thenCompose(node -> {
+                    if (node.has("error")) {
+                        return perform(request().authentication().createApiKey(nonce), ResponseMapper.jsonMapper())
+                                .thenCompose(this::saveClobCredentials);
+                    } else {
+                        return saveClobCredentials(node);
+                    }
+                });
+    }
+
+    private CompletableFuture<Void> saveClobCredentials(JsonNode node) {
+        Secrets secrets = AuthenticationUtils.buildClobSecrets(node);
+        Authentication authentication = this.authentication.get();
+        authentication.setClobSecrets(secrets);
+        return CompletableFuture.completedFuture(null);
     }
 
 }

@@ -16,14 +16,11 @@ package pro.smdev.poly4j.factory;
  * limitations under the License.
  */
 
-import org.web3j.crypto.Keys;
 import pro.smdev.poly4j.model.Authentication;
 import pro.smdev.poly4j.model.RequestBuilder;
-import pro.smdev.poly4j.model.Wallet;
-import pro.smdev.poly4j.utils.AuthenticationUtils;
 
 import java.io.IOException;
-import java.time.Instant;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Factory for all supported requests to authentication block on polymarket
@@ -32,27 +29,26 @@ import java.time.Instant;
  * @since 1.0.0
  * @see RequestBuilder
  */
-public class AuthenticationRequestFactory {
+public class AuthenticationRequestFactory extends AuthenticatedGuard {
+
+    public AuthenticationRequestFactory(AtomicReference<Authentication> authentication) {
+        super(authentication);
+    }
 
     /**
      * Create request to create API key for profile
      * <br>
      * API:
      * <a href="https://docs.polymarket.com/getting-started/api#authentication">https://clob.polymarket.com/auth/api-key</a>
-     * @param authentication {@link Authentication} object
      * @param nonce Nonce for newly created api key
      * @return Configured {@link RequestBuilder}
      *
      */
-    public RequestBuilder createApiKey(Authentication authentication, String nonce) throws IOException {
-        String timestamp = String.valueOf(Instant.now().getEpochSecond());
+    public RequestBuilder createApiKey(String nonce) {
         return RequestBuilder.clobApi()
                 .post(null)
                 .url("/auth/api-key")
-                .addHeader("POLY_ADDRESS", Keys.toChecksumAddress(authentication.getSignerAddress()))
-                .addHeader("POLY_SIGNATURE", AuthenticationUtils.encodeL1Signature(authentication, timestamp, nonce))
-                .addHeader("POLY_TIMESTAMP", timestamp)
-                .addHeader("POLY_NONCE", nonce);
+                .authenticatedL1(validateL1(), nonce);
     }
 
     /**
@@ -60,20 +56,15 @@ public class AuthenticationRequestFactory {
      * <br>
      * API:
      * <a href="https://docs.polymarket.com/getting-started/api#authentication">https://clob.polymarket.com/auth/derive-api-key</a>
-     * @param wallet {@link Wallet} object
      * @param nonce Nonce for existing api key
      * @return Configured {@link RequestBuilder}
      *
      */
-    public RequestBuilder deriveApiKey(Authentication authentication, String nonce) throws IOException {
-        String timestamp = String.valueOf(Instant.now().getEpochSecond());
+    public RequestBuilder deriveApiKey(String nonce) {
         return RequestBuilder.clobApi()
                 .get()
                 .url("/auth/derive-api-key")
-                .addHeader("POLY_ADDRESS", Keys.toChecksumAddress(authentication.getSignerAddress()))
-                .addHeader("POLY_SIGNATURE", AuthenticationUtils.encodeL1Signature(authentication, timestamp, nonce))
-                .addHeader("POLY_TIMESTAMP", timestamp)
-                .addHeader("POLY_NONCE", nonce);
+                .authenticatedL1(validateL1(), nonce);
     }
 
 }

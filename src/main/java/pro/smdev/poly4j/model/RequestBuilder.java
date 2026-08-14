@@ -16,19 +16,25 @@ package pro.smdev.poly4j.model;
  * limitations under the License.
  */
 
+import org.web3j.crypto.Keys;
 import pro.smdev.poly4j.core.PolyClient;
+import pro.smdev.poly4j.utils.AuthenticationUtils;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpRequest;
+import java.time.Instant;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- *  This class contains all temporal configuration which will be used to build {@link HttpRequest}.
+ * This class contains all temporal configuration which will be used to build {@link HttpRequest}.
  *
- *  <p>Configure this object using builder-style syntax. New instance can be created using
- *  {@link pro.smdev.poly4j.factory.RequestFactoryHolder} which is provided by {@link PolyClient#request()}</p>
+ * <p>Configure this object using builder-style syntax. New instance can be created using
+ * {@link pro.smdev.poly4j.factory.RequestFactoryHolder} which is provided by {@link PolyClient#request()}</p>
  *
  * @author ALazyGuy
  * @since 1.0.0
@@ -67,6 +73,12 @@ public class RequestBuilder {
         return this;
     }
 
+    public RequestBuilder delete(String data) {
+        requestMethod = RequestMethod.DELETE;
+        postData = data;
+        return this;
+    }
+
     public RequestBuilder addParam(String key, String value) {
         params.put(key, value);
         return this;
@@ -75,6 +87,24 @@ public class RequestBuilder {
     public RequestBuilder addHeader(String key, String value) {
         headers.put(key, value);
         return this;
+    }
+
+    public RequestBuilder authenticatedL1(Authentication authentication, String nonce) {
+        String timestamp = String.valueOf(Instant.now().getEpochSecond());
+        return addHeader("POLY_ADDRESS", Keys.toChecksumAddress(authentication.getSignerAddress()))
+                .addHeader("POLY_SIGNATURE", AuthenticationUtils.encodeL1Signature(authentication, timestamp, nonce))
+                .addHeader("POLY_TIMESTAMP", timestamp)
+                .addHeader("POLY_NONCE", nonce);
+    }
+
+    public RequestBuilder authenticatedL2(Authentication authentication) {
+        String timestamp = String.valueOf(Instant.now().getEpochSecond());
+        return addHeader("POLY_API_KEY", authentication.getClobSecrets().key())
+                .addHeader("POLY_ADDRESS", Keys.toChecksumAddress(authentication.getSignerAddress()))
+                .addHeader("POLY_SIGNATURE", AuthenticationUtils.encodeL2Signature(authentication.getClobSecrets().secret(),
+                        timestamp, requestMethod.name().toUpperCase(Locale.ROOT), url, requestMethod == RequestMethod.POST ? Objects.requireNonNullElse(postData, "") : ""))
+                .addHeader("POLY_PASSPHRASE", authentication.getClobSecrets().passphrase())
+                .addHeader("POLY_TIMESTAMP", timestamp);
     }
 
     public String toUrl() {
@@ -93,6 +123,8 @@ public class RequestBuilder {
 
         if (requestMethod == RequestMethod.POST) {
             builder = builder.POST(postData == null ? HttpRequest.BodyPublishers.noBody() : HttpRequest.BodyPublishers.ofString(postData));
+        } else if (requestMethod == RequestMethod.DELETE) {
+            builder = builder.method("DELETE", postData == null ? HttpRequest.BodyPublishers.noBody() : HttpRequest.BodyPublishers.ofString(postData));
         }
 
         for (Map.Entry<String, String> entry : headers.entrySet()) {
@@ -102,15 +134,15 @@ public class RequestBuilder {
         return builder.build();
     }
 
-    public static  RequestBuilder gammaApi() {
+    public static RequestBuilder gammaApi() {
         return new RequestBuilder(POLYMARKET_GAMMA_API);
     }
 
-    public static  RequestBuilder dataApi() {
+    public static RequestBuilder dataApi() {
         return new RequestBuilder(POLYMARKET_DATA_API);
     }
 
-    public static  RequestBuilder clobApi() {
+    public static RequestBuilder clobApi() {
         return new RequestBuilder(POLYMARKET_CLOB_API);
     }
 
