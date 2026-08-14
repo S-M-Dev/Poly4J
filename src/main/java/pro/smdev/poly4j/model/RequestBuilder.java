@@ -89,7 +89,7 @@ public class RequestBuilder {
         return this;
     }
 
-    public RequestBuilder authenticatedL1(Authentication authentication, String nonce) throws IOException {
+    public RequestBuilder authenticatedL1(Authentication authentication, String nonce) {
         String timestamp = String.valueOf(Instant.now().getEpochSecond());
         return addHeader("POLY_ADDRESS", Keys.toChecksumAddress(authentication.getSignerAddress()))
                 .addHeader("POLY_SIGNATURE", AuthenticationUtils.encodeL1Signature(authentication, timestamp, nonce))

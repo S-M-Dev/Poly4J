@@ -25,8 +25,8 @@ public class Authentication {
     private final String fundAddress;
     private final String signerAddress;
     private final String signerPrivateKey;
-    private Secrets builderSecrets = null;
-    private Secrets clobSecrets = null;
+    private volatile Secrets builderSecrets = null;
+    private volatile Secrets clobSecrets = null;
 
     public Authentication(String signerPrivateKey, String builderApiKey, String builderSecret, String builderPassphrase) {
         this(signerPrivateKey);

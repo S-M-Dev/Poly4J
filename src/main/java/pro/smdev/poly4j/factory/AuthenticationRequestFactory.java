@@ -44,7 +44,7 @@ public class AuthenticationRequestFactory extends AuthenticatedGuard {
      * @return Configured {@link RequestBuilder}
      *
      */
-    public RequestBuilder createApiKey(String nonce) throws IOException {
+    public RequestBuilder createApiKey(String nonce) {
         return RequestBuilder.clobApi()
                 .post(null)
                 .url("/auth/api-key")
@@ -60,7 +60,7 @@ public class AuthenticationRequestFactory extends AuthenticatedGuard {
      * @return Configured {@link RequestBuilder}
      *
      */
-    public RequestBuilder deriveApiKey(String nonce) throws IOException {
+    public RequestBuilder deriveApiKey(String nonce) {
         return RequestBuilder.clobApi()
                 .get()
                 .url("/auth/derive-api-key")

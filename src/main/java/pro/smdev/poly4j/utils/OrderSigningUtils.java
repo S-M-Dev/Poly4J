@@ -196,9 +196,10 @@ public class OrderSigningUtils {
      * @return the fully signed {@link Order}
      * @throws IOException if signing fails
      */
-    public static Order createAndSignOrder(Authentication authentication, String maker, String tokenId,
+    public static Order createAndSignOrder(Authentication authentication, String tokenId,
             String makerAmount, String takerAmount, Side side, long expiration, SignatureType signatureType,
             boolean negRisk) throws IOException {
+        String maker = authentication.getFundAddress();
         long salt = ThreadLocalRandom.current().nextLong(1, MAX_SAFE_INTEGER);
         long timestamp = Instant.now().toEpochMilli();
         String verifyingContract = negRisk ? NEG_RISK_CTF_EXCHANGE : CTF_EXCHANGE;

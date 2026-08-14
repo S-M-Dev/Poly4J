@@ -71,7 +71,7 @@ public class AuthenticationUtils {
      * @param nonce Request nonce
      * @return Encoded signature for L1 authentication
      */
-    public static String encodeL1Signature(Authentication authentication, String timestamp, String nonce) throws IOException {
+    public static String encodeL1Signature(Authentication authentication, String timestamp, String nonce) {
         try {
             String cleanedPrivateKey = authentication.getSignerPrivateKey().replace("0x", "").trim();
             String checksummedWallet = Keys.toChecksumAddress(authentication.getSignerAddress().trim());
@@ -99,7 +99,7 @@ public class AuthenticationUtils {
             System.arraycopy(signatureData.getV(), 0, signatureBytes, 64, 1);
             return Numeric.toHexString(signatureBytes);
         } catch (Exception e) {
-            throw new IOException("Failed to generate L1 signature: " + e.getMessage(), e);
+            throw new IllegalArgumentException("Failed to generate L1 signature: " + e.getMessage(), e);
         }
     }
 
