@@ -25,11 +25,25 @@ import java.io.IOException;
 
 /**
  * Serializes a signed {@link Order} into the {@code SendOrder} JSON body expected by {@code POST /order}.
+ *
+ * @author ALazyGuy
+ * @since 2.0.0
  */
 public class OrderJsonUtils {
 
     private static final JsonMapper MAPPER = new JsonMapper();
 
+    /**
+     * Serializes a signed {@link Order} into the {@code SendOrder} JSON body expected by {@code POST /order}.
+     *
+     * @param order signed {@link Order} to submit
+     * @param owner CLOB API key of the account submitting the order
+     * @param orderType time in force for the order
+     * @param deferExec whether to defer execution
+     * @param postOnly whether the order must rest on the book and not match immediately (GTC/GTD only)
+     * @return the {@code SendOrder} request body
+     * @throws IOException if serialization fails
+     */
     public static String toSendOrderBody(Order order, String owner, OrderType orderType, boolean deferExec,
             boolean postOnly) throws IOException {
         ObjectNode orderNode = MAPPER.createObjectNode();

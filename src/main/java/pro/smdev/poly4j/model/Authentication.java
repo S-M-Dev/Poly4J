@@ -21,6 +21,14 @@ import org.web3j.crypto.Keys;
 import org.web3j.utils.Numeric;
 import pro.smdev.poly4j.utils.DepositWalletUtils;
 
+/**
+ * Holds a Polymarket account's authentication state: the signer's address and private key, the
+ * derived deposit-wallet ({@code fund}) address, and the {@link Secrets} for the CLOB and builder APIs
+ * once they have been derived or set.
+ *
+ * @author ALazyGuy
+ * @since 2.0.0
+ */
 public class Authentication {
     private final String fundAddress;
     private final String signerAddress;

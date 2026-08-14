@@ -18,6 +18,12 @@ package pro.smdev.poly4j.utils;
 
 import pro.smdev.poly4j.model.Wallet;
 
+/**
+ * Builds JSON bodies for relayer-API builder operations.
+ *
+ * @author ALazyGuy
+ * @since 2.0.0
+ */
 public class BuilderApiUtils {
     private static final String WALLET_CREATE = "{" +
             "\"type\": \"WALLET-CREATE\"," +
@@ -26,6 +32,13 @@ public class BuilderApiUtils {
             "\"metadata\": \"Deploy Deposit Wallet\"" +
             "}";
 
+    /**
+     * Builds the {@code WALLET-CREATE} relayer transaction body that deploys a {@link Wallet deposit wallet}
+     * for the given signer.
+     *
+     * @param signer Ethereum address that will own the deposit wallet
+     * @return the JSON transaction body to submit to the relayer's {@code /submit} endpoint
+     */
     public static String walletCreate(String signer) {
         return WALLET_CREATE.formatted(signer);
     }

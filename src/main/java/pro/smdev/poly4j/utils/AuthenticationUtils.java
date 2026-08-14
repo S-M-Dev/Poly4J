@@ -33,6 +33,9 @@ import java.util.Base64;
 
 /**
  * Utility methods for authentication
+ *
+ * @author ALazyGuy
+ * @since 2.0.0
  */
 public class AuthenticationUtils {
 
@@ -139,6 +142,11 @@ public class AuthenticationUtils {
         }
     }
 
+    /**
+     * Builds {@link Secrets} from a {@code create-api-key}/{@code derive-api-key} response.
+     * @param authNode JSON response node containing {@code apiKey}, {@code secret} and {@code passphrase}
+     * @return the parsed CLOB {@link Secrets}
+     */
     public static Secrets buildClobSecrets(JsonNode authNode) {
         return new Secrets(
                 authNode.at("/apiKey").asText(),

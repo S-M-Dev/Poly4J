@@ -24,6 +24,13 @@ import pro.smdev.poly4j.utils.BuilderApiUtils;
 import java.time.Instant;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * Factory for requests to the relayer/builder block on polymarket.
+ *
+ * @author ALazyGuy
+ * @since 2.0.0
+ * @see RequestBuilder
+ */
 public class BuilderRequestFactory extends AuthenticatedGuard {
 
     public BuilderRequestFactory(AtomicReference<Authentication> authentication) {

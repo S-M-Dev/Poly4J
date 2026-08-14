@@ -16,5 +16,16 @@ package pro.smdev.poly4j.model;
  * limitations under the License.
  */
 
+/**
+ * An API credential triple, used for both CLOB ({@link Authentication#getClobSecrets()}) and
+ * builder ({@link Authentication#getBuilderSecrets()}) API keys.
+ *
+ * @param key API key
+ * @param secret API secret used to sign L2 request headers
+ * @param passphrase API passphrase
+ *
+ * @author ALazyGuy
+ * @since 2.0.0
+ */
 public record Secrets(String key, String secret, String passphrase) {
 }

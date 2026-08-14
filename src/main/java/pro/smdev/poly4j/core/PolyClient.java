@@ -94,6 +94,13 @@ public class PolyClient {
         return authentication.get();
     }
 
+    /**
+     * Derives and stores L2 (CLOB API key) credentials for the current {@link #authenticated authentication},
+     * creating a new API key if one does not already exist for {@code nonce}.
+     *
+     * @param nonce nonce to derive/create the API key with
+     * @return a future that completes once the {@link Secrets} have been stored
+     */
     public CompletableFuture<Void> deriveL2Credentials(String nonce) {
         return perform(request().authentication().deriveApiKey(nonce), ResponseMapper.jsonMapper())
                 .thenCompose(node -> {
