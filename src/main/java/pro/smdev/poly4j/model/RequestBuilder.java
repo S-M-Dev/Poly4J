@@ -89,6 +89,14 @@ public class RequestBuilder {
         return this;
     }
 
+    /**
+     * Adds the {@code POLY_ADDRESS}, {@code POLY_SIGNATURE}, {@code POLY_TIMESTAMP} and {@code POLY_NONCE}
+     * headers required for L1 (wallet-signature) authenticated endpoints.
+     *
+     * @param authentication {@link Authentication} holding the signer's address/private key
+     * @param nonce request nonce
+     * @return this builder
+     */
     public RequestBuilder authenticatedL1(Authentication authentication, String nonce) {
         String timestamp = String.valueOf(Instant.now().getEpochSecond());
         return addHeader("POLY_ADDRESS", Keys.toChecksumAddress(authentication.getSignerAddress()))
@@ -97,6 +105,13 @@ public class RequestBuilder {
                 .addHeader("POLY_NONCE", nonce);
     }
 
+    /**
+     * Adds the {@code POLY_API_KEY}, {@code POLY_ADDRESS}, {@code POLY_SIGNATURE}, {@code POLY_PASSPHRASE}
+     * and {@code POLY_TIMESTAMP} headers required for L2 (CLOB API key) authenticated endpoints.
+     *
+     * @param authentication {@link Authentication} holding the CLOB {@link pro.smdev.poly4j.model.Secrets}
+     * @return this builder
+     */
     public RequestBuilder authenticatedL2(Authentication authentication) {
         String timestamp = String.valueOf(Instant.now().getEpochSecond());
         return addHeader("POLY_API_KEY", authentication.getClobSecrets().key())

@@ -18,8 +18,24 @@ package pro.smdev.poly4j.factory;
 
 import pro.smdev.poly4j.model.RequestBuilder;
 
+/**
+ * Factory for all supported requests to the orderbook block on polymarket
+ *
+ * @author ALazyGuy
+ * @since 2.0.0
+ * @see RequestBuilder
+ */
 public class OrderbookRequestFactory {
 
+    /**
+     * Create request for the best price to fully fill a market order on one side of a token.
+     * <br>
+     * API:
+     * <a href="https://docs.polymarket.com/api-reference/market-data/get-market-price">https://clob.polymarket.com/price</a>
+     * @param tokenId CLOB token id (asset id)
+     * @param side {@code BUY} or {@code SELL}
+     * @return Configured {@link RequestBuilder}
+     */
     public RequestBuilder getPrice(String tokenId, String side) {
         return RequestBuilder.clobApi()
                 .get()

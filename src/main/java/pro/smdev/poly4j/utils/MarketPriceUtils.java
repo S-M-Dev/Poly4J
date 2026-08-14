@@ -34,6 +34,9 @@ import java.util.List;
  * <p>Polymarket's own docs and third-party reports disagree on whether {@code bids}/{@code asks} are returned
  * best-price-first or worst-price-first, so this class sorts each side itself before walking it &mdash;
  * correct regardless of the array's original order.</p>
+ *
+ * @author ALazyGuy
+ * @since 2.0.0
  */
 public class MarketPriceUtils {
 

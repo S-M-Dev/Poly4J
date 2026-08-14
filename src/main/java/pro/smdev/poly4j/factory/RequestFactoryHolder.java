@@ -22,6 +22,8 @@ import pro.smdev.poly4j.model.RequestBuilder;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
+ * Aggregates every request factory, exposed as a single entry point via {@link pro.smdev.poly4j.core.PolyClient#request()}.
+ *
  * @author ALazyGuy
  * @since 1.0.0
  * @see RequestBuilder
