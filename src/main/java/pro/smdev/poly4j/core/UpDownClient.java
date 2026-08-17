@@ -23,6 +23,7 @@ import pro.smdev.poly4j.model.Order;
 import pro.smdev.poly4j.model.OrderType;
 import pro.smdev.poly4j.model.Side;
 import pro.smdev.poly4j.model.SignatureType;
+import pro.smdev.poly4j.model.dto.OrderResult;
 import pro.smdev.poly4j.model.dto.UpDownMarket;
 import pro.smdev.poly4j.utils.MarketPriceUtils;
 import pro.smdev.poly4j.utils.OrderSigningUtils;
@@ -103,10 +104,10 @@ public class UpDownClient extends AuthenticatedGuard {
      * @param side {@link Side#BUY} or {@link Side#SELL}
      * @param assetId CLOB token id (asset id) being traded
      * @param cash USD notional to spend for a BUY, or number of shares to sell for a SELL
-     * @return a future completing with the number of shares filled (BUY) or USD received (SELL),
-     *         or {@code 0.0} if every attempt was killed
+     * @return a future completing with an {@link OrderResult} describing the shares filled (BUY) or
+     *         USD received (SELL), or a failure message if every attempt was killed
      */
-    public CompletableFuture<Double> placeOrder(Side side, String assetId, double cash) {
+    public CompletableFuture<OrderResult> placeOrder(Side side, String assetId, double cash) {
         return placeOrder(side, assetId, cash, MAX_FOK_ATTEMPTS);
     }
 
@@ -119,9 +120,10 @@ public class UpDownClient extends AuthenticatedGuard {
      * @param assetId CLOB token id (asset id) being traded
      * @param cash USD notional to spend for a BUY, or number of shares to sell for a SELL
      * @param attemptsLeft remaining attempts, including this one
-     * @return a future completing with the filled amount, or {@code 0.0} once {@code attemptsLeft} is exhausted
+     * @return a future completing with an {@link OrderResult} describing the filled amount, or a failure
+     *         message once {@code attemptsLeft} is exhausted
      */
-    private CompletableFuture<Double> placeOrder(Side side, String assetId, double cash, int attemptsLeft) {
+    private CompletableFuture<OrderResult> placeOrder(Side side, String assetId, double cash, int attemptsLeft) {
         return client.perform(client.request().orderbook().getOrderBook(assetId), ResponseMapper.jsonMapper())
                 .thenCompose(bookNode -> {
                     double marketPrice = MarketPriceUtils.calculateMarketPrice(bookNode, side, cash);
@@ -142,14 +144,22 @@ public class UpDownClient extends AuthenticatedGuard {
                     return client.perform(client.request().orders().postOrder(order, OrderType.FOK, false, false),
                                     ResponseMapper.jsonMapper())
                             .thenCompose(postOrderNode -> {
+                                if (postOrderNode.has("error")) {
+                                    String error = postOrderNode.at("/error").asText();
+                                    if (!error.isBlank()) {
+                                        return CompletableFuture.completedFuture(new OrderResult(0.0, error));
+                                    }
+                                }
                                 if (postOrderNode.has("takingAmount") && !postOrderNode.at("/takingAmount").isMissingNode()) {
-                                    return CompletableFuture.completedFuture(
-                                            Double.parseDouble(postOrderNode.at("/takingAmount").asText()));
+                                    return CompletableFuture.completedFuture(new OrderResult(
+                                            Double.parseDouble(postOrderNode.at("/takingAmount").asText()),
+                                            "Success"
+                                    ));
                                 }
                                 if (attemptsLeft > 1) {
                                     return placeOrder(side, assetId, cash, attemptsLeft - 1);
                                 }
-                                return CompletableFuture.completedFuture(0.0);
+                                return CompletableFuture.completedFuture(new OrderResult(0.0, "Unhandled error"));
                             });
                 });
     }
@@ -160,7 +170,8 @@ public class UpDownClient extends AuthenticatedGuard {
      *
      * @param market market the position belongs to, see {@link #getMarket}
      * @param outcome outcome name to match against, e.g. {@code "up"} or {@code "down"}
-     * @param sharesAcquired number of shares expected to appear in the position, as returned by {@link #placeOrder}
+     * @param sharesAcquired number of shares expected to appear in the position, as returned by
+     *                        {@link OrderResult#amount()} from {@link #placeOrder}
      * @param recheckInterval milliseconds to wait between poll attempts (up to 15 attempts)
      * @return a future completing with the confirmed position size, or {@code 0.0} if it did not settle in time
      */
