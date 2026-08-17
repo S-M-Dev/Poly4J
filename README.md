@@ -23,14 +23,14 @@ Poly4J is published on Maven Central.
 <dependency>
     <groupId>pro.smdev</groupId>
     <artifactId>poly4j</artifactId>
-    <version>2.1.1</version>
+    <version>2.1.2</version>
 </dependency>
 ```
 
 **Gradle**
 
 ```groovy
-implementation 'pro.smdev:poly4j:2.1.1'
+implementation 'pro.smdev:poly4j:2.1.2'
 ```
 
 ## Usage
