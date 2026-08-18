@@ -1,4 +1,4 @@
-package pro.smdev.poly4j.model;
+package pro.smdev.poly4j.exception;
 
 /*
  * Copyright 2026 S-M-Dev
@@ -17,27 +17,20 @@ package pro.smdev.poly4j.model;
  */
 
 /**
- * Side of an {@link Order}. The name of each constant is also the JSON wire value
- * expected by the CLOB API, while {@link #getValue()} is the {@code uint8} encoding
- * signed as part of the EIP-712 order struct (0 for BUY, 1 for SELL).
+ * Wraps an {@link java.io.IOException} or {@link InterruptedException} raised while sending a request via
+ * {@link pro.smdev.poly4j.core.PolyClient#perform(pro.smdev.poly4j.model.RequestBuilder)}.
  *
  * @author ALazyGuy
- * @since 2.0.0
+ * @since 2.2.0
  */
-public enum Side {
-    BUY(0),
-    SELL(1);
-
-    private final int value;
-
-    Side(int value) {
-        this.value = value;
-    }
+public class ClientRequestPerformException extends RuntimeException {
 
     /**
-     * @return the {@code uint8} encoding of this side, as signed in the EIP-712 order struct
+     * Wraps the given cause, which was raised while sending the underlying HTTP request.
+     *
+     * @param cause the {@link java.io.IOException} or {@link InterruptedException} raised while sending the request
      */
-    public int getValue() {
-        return value;
+    public ClientRequestPerformException(Throwable cause) {
+        super(cause);
     }
 }

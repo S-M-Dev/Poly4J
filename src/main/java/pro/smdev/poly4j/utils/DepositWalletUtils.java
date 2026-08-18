@@ -50,6 +50,12 @@ public class DepositWalletUtils {
     private static final byte[] ERC1967_BEACON_CONST3 =
             Numeric.hexStringToByteArray("60195155f3363d3d373d3d363d602036600436635c60da");
 
+    /**
+     * Derives the deposit-wallet address that Polymarket's relayer would deploy for {@code signerAddress}.
+     *
+     * @param signerAddress the EOA signer address that would own the deposit wallet
+     * @return the checksummed deposit-wallet address
+     */
     public static String deriveDepositWalletAddress(String signerAddress) {
         byte[] args = depositWalletArgs(signerAddress);
         byte[] bytecodeHash = beaconDepositInitCodeHash(args);

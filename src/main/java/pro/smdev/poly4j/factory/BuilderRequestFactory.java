@@ -38,8 +38,10 @@ public class BuilderRequestFactory extends AuthenticatedGuard {
     }
 
     /**
-     * Create new deposit wallet for signer
-     * @return configured request
+     * Create request to deploy a deposit wallet for the current signer via the relayer.
+     * <br>
+     * API: {@code https://relayer-v2.polymarket.com/submit}
+     * @return Configured {@link RequestBuilder}
      */
     public RequestBuilder createWallet() {
         Authentication authentication = validateBuilder();
