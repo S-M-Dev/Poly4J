@@ -18,7 +18,7 @@ package pro.smdev.poly4j.model.dto;
 
 /**
  * The two outcome tokens of a Polymarket "Up/Down" market (e.g. {@code btc-updown-15m-*}), as resolved by
- * {@link pro.smdev.poly4j.core.UpDownClient#getMarket}.
+ * {@link pro.smdev.poly4j.core.UpDownClient#getMarketAsync}.
  *
  * @param conditionId the market's condition id
  * @param upId CLOB token id (asset id) of the "Up" outcome

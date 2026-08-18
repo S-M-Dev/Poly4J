@@ -31,3 +31,8 @@ web3j crypto
 Copyright (c) 2016-2025 Web3 Labs Ltd.
 Licensed under the Apache License, Version 2.0
 https://github.com/web3j/web3j
+
+SLF4J API
+Copyright (c) 2004-2024 QOS.ch
+Licensed under the MIT License
+https://github.com/qos-ch/slf4j

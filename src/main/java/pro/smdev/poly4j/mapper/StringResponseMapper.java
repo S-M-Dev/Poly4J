@@ -27,6 +27,11 @@ import java.net.http.HttpResponse;
  */
 public class StringResponseMapper implements ResponseMapper<String> {
 
+    /**
+     * Map response to its raw body string.
+     * @param response HttpResponse
+     * @return the response body
+     */
     @Override
     public String map(HttpResponse<String> response) {
         return response.body();

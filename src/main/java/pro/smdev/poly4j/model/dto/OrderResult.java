@@ -17,7 +17,7 @@ package pro.smdev.poly4j.model.dto;
  */
 
 /**
- * Outcome of a {@link pro.smdev.poly4j.core.UpDownClient#placeOrder} attempt.
+ * Outcome of a {@link pro.smdev.poly4j.core.UpDownClient#placeOrderAsync} attempt.
  *
  * @param amount number of shares filled (BUY) or USD received (SELL), or {@code 0.0} if not filled
  * @param msg {@code "Success"} if filled, otherwise a description of why the order was not filled

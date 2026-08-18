@@ -41,6 +41,9 @@ public enum SignatureType {
         this.value = value;
     }
 
+    /**
+     * @return the {@code uint8} encoding of this signature type, as signed in the EIP-712 order struct
+     */
     public int getValue() {
         return value;
     }

@@ -35,12 +35,25 @@ import java.net.http.HttpResponse;
  */
 @FunctionalInterface
 public interface ResponseMapper<T> {
+
+    /**
+     * Maps a raw HTTP response to {@code T}.
+     *
+     * @param response the raw HTTP response
+     * @return the mapped value
+     */
     T map(HttpResponse<String> response);
 
+    /**
+     * @return a mapper that returns the response body as-is
+     */
     static ResponseMapper<String> stringMapper() {
         return new StringResponseMapper();
     }
 
+    /**
+     * @return a mapper that parses the response body as JSON
+     */
     static ResponseMapper<JsonNode> jsonMapper() {
         return new JsonResponseMapper();
     }

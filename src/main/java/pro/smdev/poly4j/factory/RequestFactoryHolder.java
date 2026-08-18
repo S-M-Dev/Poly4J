@@ -48,30 +48,51 @@ public class RequestFactoryHolder {
         ordersRequestFactory = new OrdersRequestFactory(authentication);
     }
 
+    /**
+     * @return factory for requests to the profile block
+     */
     public ProfileRequestFactory profile() {
         return profileRequestFactory;
     }
 
+    /**
+     * @return factory for requests to the markets block
+     */
     public MarketsRequestFactory markets() {
         return marketsRequestFactory;
     }
 
+    /**
+     * @return factory for requests to the authentication block
+     */
     public AuthenticationRequestFactory authentication() {
         return authenticationRequestFactory;
     }
 
+    /**
+     * @return factory for requests to the orders block
+     */
     public OrdersRequestFactory orders() {
         return ordersRequestFactory;
     }
 
+    /**
+     * @return factory for requests to the relayer/builder block
+     */
     public BuilderRequestFactory builder() {
         return builderRequestFactory;
     }
 
+    /**
+     * @return factory for requests to the orderbook block
+     */
     public OrderbookRequestFactory orderbook() {
         return orderbookRequestFactory;
     }
 
+    /**
+     * @return factory for requests to the positions block
+     */
     public PositionsRequestFactory positions() {
         return positionsRequestFactory;
     }
