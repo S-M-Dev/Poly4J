@@ -17,6 +17,8 @@ package pro.smdev.poly4j.core;
  */
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pro.smdev.poly4j.factory.AuthenticatedGuard;
 import pro.smdev.poly4j.mapper.ResponseMapper;
 import pro.smdev.poly4j.model.Order;
@@ -29,7 +31,6 @@ import pro.smdev.poly4j.utils.MarketPriceUtils;
 import pro.smdev.poly4j.utils.OrderSigningUtils;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -43,6 +44,8 @@ import java.util.concurrent.TimeUnit;
  * @since 2.1.1
  */
 public class UpDownClient extends AuthenticatedGuard {
+
+    private static final Logger log = LoggerFactory.getLogger(UpDownClient.class);
 
     private final PolyClient client;
 
@@ -99,6 +102,7 @@ public class UpDownClient extends AuthenticatedGuard {
      * exactly two outcomes/token ids
      */
     public UpDownMarket getMarket(String slug) {
+        log.debug("Loading market '{}'", slug);
         JsonNode node = client.perform(client.request().markets().bySlug(slug), ResponseMapper.jsonMapper());
         String[] outcomes = splitJsonStringArray(node.at("/outcomes").textValue());
         String[] clobTokens = splitJsonStringArray(node.at("/clobTokenIds").textValue());
@@ -113,8 +117,11 @@ public class UpDownClient extends AuthenticatedGuard {
                 }
             }
 
-            return new UpDownMarket(node.at("/conditionId").textValue(), up, down);
+            UpDownMarket upDownMarket = new UpDownMarket(node.at("/conditionId").textValue(), up, down);
+            log.debug("Loaded market by slug '{}' -> {}", slug, upDownMarket);
+            return upDownMarket;
         }
+        log.debug("No market found by slug '{}'", slug);
         return null;
     }
 
@@ -180,6 +187,7 @@ public class UpDownClient extends AuthenticatedGuard {
      * {@code attemptsLeft} is exhausted
      */
     public OrderResult placerOder(Side side, String assetId, double cash, int attemptsLeft) {
+        log.debug("Trying to place order {} on {} for {} {}. Attempt: {}", side.name(), assetId, cash, side == Side.BUY ? "$" : " shares", attemptsLeft);
         JsonNode bookNode = client.perform(client.request().orderbook().getOrderBook(assetId), ResponseMapper.jsonMapper());
         double marketPrice = MarketPriceUtils.calculateMarketPrice(bookNode, side, cash);
         int takerDecimals = MarketPriceUtils.takerAmountDecimals(bookNode.get("tick_size").asText());
@@ -196,9 +204,11 @@ public class UpDownClient extends AuthenticatedGuard {
                 client.getAuthentication(), assetId, makerAmount, takerAmount,
                 side, 0, SignatureType.DEPOSIT_WALLET, false);
 
+        log.debug("Order to be placed: {}", order);
         JsonNode postOrderNode = client.perform(client.request().orders().postOrder(order, OrderType.FOK, false, false),
                 ResponseMapper.jsonMapper());
 
+        log.trace("Order placement response: {}", postOrderNode.toString());
         if (postOrderNode.has("error")) {
             String error = postOrderNode.at("/error").asText();
             if (!error.isBlank()) {
@@ -240,7 +250,8 @@ public class UpDownClient extends AuthenticatedGuard {
      * @param outcome         outcome name to match against, e.g. {@code "up"} or {@code "down"}
      * @param sharesAcquired  number of shares expected to appear in the position, as returned by
      *                        {@link OrderResult#amount()} from {@link #placeOrderAsync}
-     * @param recheckInterval milliseconds to wait between poll attempts (up to 15 attempts)
+     * @param waitFor         milliseconds to keep polling before giving up
+     * @param waitInterval    milliseconds to wait between poll attempts (0 for no delay)
      * @return a future completing with the confirmed position size, or {@code 0.0} if it did not settle in time
      */
     public CompletableFuture<Double> awaitOpenPositionAsync(UpDownMarket market, String outcome, double sharesAcquired, long waitFor, long waitInterval) {
@@ -278,6 +289,7 @@ public class UpDownClient extends AuthenticatedGuard {
     public double awaitOpenPosition(UpDownMarket market, String outcome, double sharesAcquired, long waitFor, long waitInterval) {
         double confirmedShares = 0;
         long end = System.currentTimeMillis() + waitFor;
+        log.debug("Waiting for {} millis. Recheck interval is {}", waitFor, waitInterval);
         try {
             while (confirmedShares < sharesAcquired - 0.001 && System.currentTimeMillis() < end) {
                 if (waitInterval != 0) {
@@ -292,6 +304,7 @@ public class UpDownClient extends AuthenticatedGuard {
                         break;
                     }
                 }
+                log.debug("Waiting for {} millis more", end - System.currentTimeMillis());
             }
         } catch (InterruptedException e) {
             return 0;

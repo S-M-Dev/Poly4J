@@ -15,6 +15,7 @@ Poly4J is a lightweight Java library that provides a clean, builder-style interf
 - Asynchronous requests backed by Java's `HttpClient`, returning `CompletableFuture`, with synchronous equivalents throughout
 - Pluggable response mapping — map responses to `String`, `JsonNode`, or any custom type via `ResponseMapper`
 - Unchecked exceptions for common failure modes — `ClientRequestPerformException` for transport failures and `NotAuthenticatedException` for missing credentials — instead of checked exceptions or silent failures
+- [SLF4J](https://www.slf4j.org/)-based logging of outgoing requests and `UpDownClient` trading activity
 - Built on Java 21, using Jackson for JSON handling and web3j/Bouncy Castle for wallet signing
 
 ## Installation
@@ -137,6 +138,13 @@ if (buy.amount() > 0) {
 ```
 
 For the full list of supported requests, request factories, and mappers, see the [documentation](https://docs.smdev.pro/poly4j/#/).
+
+## Logging
+
+Poly4J logs via [SLF4J](https://www.slf4j.org/) — add a binding (Logback, Log4j2, etc.) on your classpath to see output; without one, calls are silently no-ops.
+
+- `PolyClient` logs each outgoing request at `INFO` (`[METHOD] url`) and the response status/truncated body at `TRACE`
+- `UpDownClient` logs market resolution, order placement, and position-polling progress at `DEBUG`, and raw order/response payloads at `TRACE`
 
 ## Requirements
 

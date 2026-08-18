@@ -17,6 +17,8 @@ package pro.smdev.poly4j.core;
  */
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pro.smdev.poly4j.exception.ClientRequestPerformException;
 import pro.smdev.poly4j.factory.RequestFactoryHolder;
 import pro.smdev.poly4j.mapper.ResponseMapper;
@@ -27,6 +29,7 @@ import pro.smdev.poly4j.utils.AuthenticationUtils;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
@@ -43,6 +46,8 @@ import java.util.concurrent.atomic.AtomicReference;
  * @since 1.0.0
  */
 public class PolyClient {
+
+    private static final Logger log = LoggerFactory.getLogger(PolyClient.class);
 
     private final AtomicReference<Authentication> authentication = new AtomicReference<>();
     private final RequestFactoryHolder requestFactoryHolder = new RequestFactoryHolder(authentication);
@@ -95,7 +100,15 @@ public class PolyClient {
      */
     public <T> T perform(RequestBuilder requestBuilder, ResponseMapper<T> responseMapper) {
         try {
-            return responseMapper.map(client.send(requestBuilder.toHttpRequest(), HttpResponse.BodyHandlers.ofString()));
+            HttpRequest httpRequest = requestBuilder.toHttpRequest();
+            log.info("[{}] {}", httpRequest.method(), requestBuilder.toUrl());
+            HttpResponse<String> response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            String body = response.body();
+            if (body.length() > 100) {
+                body = body.substring(0, 100) + "...";
+            }
+            log.trace("Response: Code[{}]\nBody:\n{}", response.statusCode(), body);
+            return responseMapper.map(response);
         } catch (IOException | InterruptedException e) {
             throw new ClientRequestPerformException(e);
         }
