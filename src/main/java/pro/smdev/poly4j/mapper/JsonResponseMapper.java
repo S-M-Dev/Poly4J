@@ -19,8 +19,8 @@ package pro.smdev.poly4j.mapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import pro.smdev.poly4j.core.HttpResponse;
 
-import java.net.http.HttpResponse;
 
 /**
  * Mapper from HttpResponse&lt;String&gt; to {@link JsonNode}

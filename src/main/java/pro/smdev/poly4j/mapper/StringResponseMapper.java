@@ -16,7 +16,7 @@ package pro.smdev.poly4j.mapper;
  * limitations under the License.
  */
 
-import java.net.http.HttpResponse;
+import pro.smdev.poly4j.core.HttpResponse;
 
 /**
  * Mapper from HttpResponse&lt;String&gt; to String

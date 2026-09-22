@@ -27,10 +27,6 @@ import pro.smdev.poly4j.model.RequestBuilder;
 import pro.smdev.poly4j.model.Secrets;
 import pro.smdev.poly4j.utils.AuthenticationUtils;
 
-import java.io.IOException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -55,10 +51,10 @@ public class PolyClient {
     private final HttpClient client;
 
     /**
-     * Creates a client backed by a default {@link HttpClient#newHttpClient()}.
+     * Creates a client backed by a default {@link java.net.http.HttpClient#newHttpClient()}.
      */
     public PolyClient() {
-        this(HttpClient.newHttpClient());
+        this(new DefaultHttpClient());
     }
 
     /**
@@ -100,16 +96,14 @@ public class PolyClient {
      */
     public <T> T perform(RequestBuilder requestBuilder, ResponseMapper<T> responseMapper) {
         try {
-            HttpRequest httpRequest = requestBuilder.toHttpRequest();
-            log.info("[{}] {}", httpRequest.method(), requestBuilder.toUrl());
-            HttpResponse<String> response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = client.send(requestBuilder);
             String body = response.body();
             if (body.length() > 100) {
                 body = body.substring(0, 100) + "...";
             }
-            log.trace("Response: Code[{}]\nBody:\n{}", response.statusCode(), body);
+            log.trace("Response: Code[{}]\nBody:\n{}", response.status(), body);
             return responseMapper.map(response);
-        } catch (IOException | InterruptedException e) {
+        } catch (Exception e) {
             throw new ClientRequestPerformException(e);
         }
 

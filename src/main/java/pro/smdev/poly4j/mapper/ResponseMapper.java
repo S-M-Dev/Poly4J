@@ -17,11 +17,7 @@ package pro.smdev.poly4j.mapper;
  */
 
 import com.fasterxml.jackson.databind.JsonNode;
-import pro.smdev.poly4j.factory.MarketsRequestFactory;
-import pro.smdev.poly4j.factory.ProfileRequestFactory;
-import pro.smdev.poly4j.model.RequestBuilder;
-
-import java.net.http.HttpResponse;
+import pro.smdev.poly4j.core.HttpResponse;
 
 /**
  * Declares mapping method to convert HttpResponse&lt;String&gt; to any other type
